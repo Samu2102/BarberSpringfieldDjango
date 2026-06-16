@@ -38,6 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'citas',
+    'barberos',   
+    'clientes',
+    'usuarios',       
+    'administracion',
 ]
 
 MIDDLEWARE = [
@@ -55,7 +59,13 @@ ROOT_URLCONF = 'barberia.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR / 'barberos' / 'templates',
+            BASE_DIR / 'clientes' / 'templates',
+            BASE_DIR / 'citas' / 'templates',
+            BASE_DIR / 'usuarios' / 'templates',        
+            BASE_DIR / 'administracion' / 'templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -119,3 +129,5 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'

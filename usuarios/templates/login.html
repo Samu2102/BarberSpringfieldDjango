@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - BarberSpringfield</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <div class="login-wrapper">
+        <div class="login-card-custom">
+            <div class="text-center mb-4">
+                <h1 class="display-5 fw-bold">Barber<span style="color:#C9A87C;">Springfield</span></h1>
+                <p class="text-light-brown">Acceso al sistema</p>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-danger">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label text-yellow">Correo Electrónico</label>
+                    <div class="input-group">
+                        <span class="input-group-text input-group-text-custom">
+                            <i class="bi bi-envelope"></i>
+                        </span>
+                        <input type="email" name="email" class="form-control form-control-login"
+                               placeholder="usuario@email.com" required>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-yellow">Contraseña</label>
+                    <div class="input-group">
+                        <span class="input-group-text input-group-text-custom">
+                            <i class="bi bi-lock"></i>
+                        </span>
+                        <input type="password" name="password" class="form-control form-control-login"
+                               placeholder="Ingresa tu contraseña" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary-custom w-100 py-2">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+                </button>
+            </form>
+
+            <div class="text-center my-4">
+                <span class="text-light-brown">o</span>
+            </div>
+
+            <a href="{% url 'registro' %}" class="btn btn-outline-custom w-100 text-center">
+                <i class="bi bi-person-plus me-2"></i>Crear cuenta nueva (Solo Clientes)
+            </a>
+
+            <div class="text-center mt-3">
+                <a href="{% url 'inicio' %}" class="link-registro">
+                    <i class="bi bi-arrow-left"></i> Volver al inicio
+                </a>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

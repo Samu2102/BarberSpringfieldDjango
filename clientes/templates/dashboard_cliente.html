@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 
@@ -37,7 +38,10 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="/">Barber<span>Springfield</span></a>
+            <a class="navbar-brand" href="/">
+    <img src="{% static 'logo.jpeg' %}" alt="Logo" style="height:40px; width:40px; object-fit:cover; border-radius:50%; margin-right:8px;">
+    Barber<span>Springfield</span>
+</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -70,7 +74,7 @@
                 </div>
                 <div class="modal-footer border-warning">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button class="btn btn-primary-custom" onclick="window.location.href='/'">Cerrar Sesión</button>
+                    <button class="btn btn-primary-custom"onclick="window.location.href='{% url 'logout' %}'">Cerrar Sesión</button>
                 </div>
             </div>
         </div>
@@ -88,7 +92,7 @@
             <div class="col-md-7 text-center text-md-start mt-3 mt-md-0">
                 <h1 class="display-6">¡Hola, {{ nombre }}! 👋</h1>
                 <p class="text-light-brown mb-2">
-                    <i class="bi bi-star-fill text-yellow"></i> {{ proximos|length }} próximos turnos
+                    <i class="bi bi-star-fill text-yellow"></i> {{ proximos|length }} próximas citas
                 </p>
                 <div class="d-flex gap-2 justify-content-center justify-content-md-start flex-wrap">
                     <span class="badge-cliente-premium">⭐ Cliente Premium</span>

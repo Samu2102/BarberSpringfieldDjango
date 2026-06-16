@@ -44,7 +44,10 @@
     <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="#">Barber<span>Springfield</span></a>
+            <a class="navbar-brand" href="#">
+    <img src="{% static 'logo.jpeg' %}" alt="Logo" style="height:40px; width:40px; object-fit:cover; border-radius:50%; margin-right:8px;">
+    Barber<span>Springfield</span>
+</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -56,7 +59,7 @@
                     <li class="nav-item"><a class="nav-link" href="#testimonios">Opiniones</a></li>
                     <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
                     <li class="nav-item">
-                        <a class="btn btn-login-nav ms-2" href="{% url 'panel_cliente' %}">Iniciar Sesión</a>
+                        <a class="btn btn-login-nav ms-2" href="{% url 'login' %}">Iniciar Sesión</a>
                     </li>
                 </ul>
             </div>
@@ -77,7 +80,7 @@
                             Vive la experiencia de una barbería tradicional con técnicas modernas. Atención personalizada, ambiente único y los mejores acabados.
                         </p>
                         <div class="d-flex gap-3 flex-wrap">
-                            <a href="{% url 'panel_cliente' %}" class="btn btn-primary-custom">
+                            <a href="{% url 'login' %}" class="btn btn-primary-custom">
                                 Agendar turno
                             </a>
                             <button class="btn btn-outline-custom" data-bs-toggle="modal" data-bs-target="#modalEstilos">

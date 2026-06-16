@@ -1,0 +1,647 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrador - BarberSpringfield</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'inicio' %}">
+                <img src="{% static 'logo.jpeg' %}" alt="Logo" style="height:40px; width:40px; object-fit:cover; border-radius:50%; margin-right:8px;">
+                Barber<span>Springfield</span>
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                <div class="user-info">
+                    <i class="bi bi-shield-lock"></i>
+                    <span>Administrador</span>
+                </div>
+                <button class="btn-logout" data-bs-toggle="modal" data-bs-target="#modalCerrarSesion">
+                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Modal Cerrar Sesión -->
+    <div class="modal fade" id="modalCerrarSesion" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-light border-warning">
+                <div class="modal-header border-warning">
+                    <h5 class="modal-title text-warning">Cerrar Sesión</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <i class="bi bi-check-circle-fill text-warning fs-1 mb-3 d-inline-block"></i>
+                    <p class="fs-5">¿Estás seguro que deseas cerrar sesión?</p>
+                    <p class="text-light-brown">Serás redirigido al inicio.</p>
+                </div>
+                <div class="modal-footer border-warning">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-primary-custom"onclick="window.location.href='{% url 'logout' %}'">Cerrar Sesión</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container py-5">
+        <h1 class="mb-4">Bienvenido al Panel de Administración</h1>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Tarjetas de estadísticas -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-3">
+                <div class="stat-card text-center p-3">
+                    <i class="bi bi-calendar-check fs-1"></i>
+                    <h5 class="mt-3">Total Citas</h5>
+                    <h2 class="text-yellow">{{ citas|length }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center p-3">
+                    <i class="bi bi-people fs-1"></i>
+                    <h5 class="mt-3">Barberos</h5>
+                    <h2 class="text-yellow">{{ barberos|length }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center p-3">
+                    <i class="bi bi-scissors fs-1"></i>
+                    <h5 class="mt-3">Servicios</h5>
+                    <h2 class="text-yellow">{{ servicios|length }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center p-3">
+                    <i class="bi bi-box-seam fs-1"></i>
+                    <h5 class="mt-3">Productos</h5>
+                    <h2 class="text-yellow">{{ productos|length }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones rápidas -->
+        <div class="row mb-5">
+            <div class="col-md-3 mb-3">
+                <button class="btn btn-primary-custom w-100 py-3" data-bs-toggle="modal" data-bs-target="#modalAgregarBarbero">
+                    <i class="bi bi-person-badge"></i> Nuevo Barbero
+                </button>
+            </div>
+            <div class="col-md-3 mb-3">
+                <button class="btn btn-primary-custom w-100 py-3" data-bs-toggle="modal" data-bs-target="#modalAgregarProducto">
+                    <i class="bi bi-box-seam"></i> Nuevo Producto
+                </button>
+            </div>
+            <div class="col-md-3 mb-3">
+                <button class="btn btn-primary-custom w-100 py-3" data-bs-toggle="modal" data-bs-target="#modalAgregarServicio">
+                    <i class="bi bi-plus-circle"></i> Nuevo Servicio
+                </button>
+            </div>
+            <div class="col-md-3 mb-3">
+                <a href="{% url 'registro' %}" class="btn btn-primary-custom w-100 py-3">
+                    <i class="bi bi-person-plus"></i> Nuevo Cliente
+                </a>
+            </div>
+        </div>
+
+        <!-- Tabla de citas -->
+        <div class="stat-card p-4 mb-5">
+            <h5 class="mb-3"><i class="bi bi-calendar-check"></i> Citas</h5>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Servicio</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Barbero</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cita in citas %}
+                        <tr>
+                            <td>{{ cita.cliente }}</td>
+                            <td>{{ cita.servicio }}</td>
+                            <td>{{ cita.fecha }}</td>
+                            <td>{{ cita.hora }}</td>
+                            <td>{{ cita.barbero }}</td>
+                            <td>
+                                {% if cita.estado == "Confirmada" %}
+                                    <span class="badge bg-success">Confirmada</span>
+                                {% elif cita.estado == "Pendiente" %}
+                                    <span class="badge bg-warning text-dark">Pendiente</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Cancelada</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-warning"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalEditarCita"
+                                    data-id="{{ cita.id }}"
+                                    data-cliente="{{ cita.cliente }}"
+                                    data-servicio="{{ cita.servicio }}"
+                                    data-fecha="{{ cita.fecha }}"
+                                    data-hora="{{ cita.hora }}"
+                                    data-barbero="{{ cita.barbero }}"
+                                    data-estado="{{ cita.estado }}">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="7" class="text-center text-light-brown">No hay citas registradas.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tabla de barberos -->
+        <div class="stat-card p-4 mb-5">
+            <h5 class="mb-3"><i class="bi bi-person-badge"></i> Barberos</h5>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Cédula</th>
+                            <th>Especialidad</th>
+                            <th>Teléfono</th>
+                            <th>Email</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for barbero in barberos %}
+                        <tr>
+                            <td>{{ barbero.nombre }}</td>
+                            <td>{{ barbero.cedula }}</td>
+                            <td>{{ barbero.especialidad }}</td>
+                            <td>{{ barbero.telefono }}</td>
+                            <td>{{ barbero.email }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalEditarBarbero"
+                                    data-id="{{ barbero.id }}"
+                                    data-nombre="{{ barbero.nombre }}"
+                                    data-cedula="{{ barbero.cedula }}"
+                                    data-especialidad="{{ barbero.especialidad }}"
+                                    data-telefono="{{ barbero.telefono }}"
+                                    data-email="{{ barbero.email }}">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="6" class="text-center text-light-brown">No hay barberos registrados.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tabla de productos -->
+        <div class="stat-card p-4 mb-5">
+            <h5 class="mb-3"><i class="bi bi-box-seam"></i> Inventario</h5>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for producto in productos %}
+                        <tr>
+                            <td>{{ producto.nombre }}</td>
+                            <td>${{ producto.precio }}</td>
+                            <td>{{ producto.stock }}</td>
+                            <td>
+                                {% if producto.stock >= 10 %}
+                                    <span class="badge bg-success">Suficiente</span>
+                                {% elif producto.stock >= 6 %}
+                                    <span class="badge bg-warning text-dark">Medio</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Bajo</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-warning"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalEditarProducto"
+                                    data-id="{{ producto.id }}"
+                                    data-nombre="{{ producto.nombre }}"
+                                    data-precio="{{ producto.precio }}"
+                                    data-stock="{{ producto.stock }}">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center text-light-brown">No hay productos registrados.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tabla de servicios -->
+        <div class="stat-card p-4 mb-5">
+            <h5 class="mb-3"><i class="bi bi-scissors"></i> Servicios</h5>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Precio</th>
+                            <th>Duración</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for servicio in servicios %}
+                        <tr>
+                            <td>{{ servicio.nombre }}</td>
+                            <td>{{ servicio.descripcion }}</td>
+                            <td>${{ servicio.precio }}</td>
+                            <td>{{ servicio.duracion }} min</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalEditarServicio"
+                                    data-id="{{ servicio.id }}"
+                                    data-nombre="{{ servicio.nombre }}"
+                                    data-descripcion="{{ servicio.descripcion }}"
+                                    data-precio="{{ servicio.precio }}"
+                                    data-duracion="{{ servicio.duracion }}">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center text-light-brown">No hay servicios registrados.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Cita -->
+    <div class="modal fade" id="modalEditarCita" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light border-warning">
+                <div class="modal-header border-warning">
+                    <h5 class="modal-title text-warning"><i class="bi bi-pencil"></i> Editar Cita</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" id="formEditarCita">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Cliente</label>
+                            <input type="text" name="cliente" id="editCitaCliente" class="form-control bg-dark-input">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Servicio</label>
+                            <select name="servicio" id="editCitaServicio" class="form-select bg-dark-input">
+                                <option>Corte Clásico</option>
+                                <option>Barba & Afeitado</option>
+                                <option>Degradado Fade</option>
+                                <option>Combo Rey</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Fecha</label>
+                            <input type="date" name="fecha" id="editCitaFecha" class="form-control bg-dark-input">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Hora</label>
+                            <select name="hora" id="editCitaHora" class="form-select bg-dark-input">
+                                <option>10:00 AM</option>
+                                <option>11:30 AM</option>
+                                <option>01:00 PM</option>
+                                <option>02:30 PM</option>
+                                <option>04:00 PM</option>
+                                <option>05:30 PM</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Barbero</label>
+                            <select name="barbero" id="editCitaBarbero" class="form-select bg-dark-input">
+                                <option>Javier (Fade)</option>
+                                <option>Marcos (Clásico)</option>
+                                <option>Andrés (Barba)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Estado</label>
+                            <select name="estado" id="editCitaEstado" class="form-select bg-dark-input">
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="Confirmada">Confirmada</option>
+                                <option value="Cancelada">Cancelada</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-warning">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary-custom">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Agregar Barbero -->
+    <div class="modal fade" id="modalAgregarBarbero" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light border-warning">
+                <div class="modal-header border-warning">
+                    <h5 class="modal-title text-warning"><i class="bi bi-person-badge"></i> Nuevo Barbero</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" action="{% url 'agregar_barbero' %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Nombre completo</label>
+                            <input type="text" name="nombre" class="form-control bg-dark-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Cédula</label>
+                            <input type="text" name="cedula" class="form-control bg-dark-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Especialidad</label>
+                            <input type="text" name="especialidad" class="form-control bg-dark-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Teléfono</label>
+                            <input type="text" name="telefono" class="form-control bg-dark-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Email</label>
+                            <input type="email" name="email" class="form-control bg-dark-input" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-warning">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary-custom">Guardar Barbero</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Barbero -->
+    <div class="modal fade" id="modalEditarBarbero" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light border-warning">
+                <div class="modal-header border-warning">
+                    <h5 class="modal-title text-warning"><i class="bi bi-pencil"></i> Editar Barbero</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" id="formEditarBarbero">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Nombre completo</label>
+                            <input type="text" name="nombre" id="editBarberoNombre" class="form-control bg-dark-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Cédula</label>
+                            <input type="text" name="cedula" id="editBarberoCedula" class="form-control bg-dark-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Especialidad</label>
+                            <input type="text" name="especialidad" id="editBarberoEspecialidad" class="form-control bg-dark-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Teléfono</label>
+                            <input type="text" name="telefono" id="editBarberoTelefono" class="form-control bg-dark-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Email</label>
+                            <input type="email" name="email" id="editBarberoEmail" class="form-control bg-dark-input" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-warning">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary-custom">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Agregar Producto -->
+    <div class="modal fade" id="modalAgregarProducto" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light border-warning">
+                <div class="modal-header border-warning">
+                    <h5 class="modal-title text-warning"><i class="bi bi-box-seam"></i> Nuevo Producto</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" action="{% url 'agregar_producto' %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Nombre</label>
+                            <input type="text" name="nombre" class="form-control bg-dark-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Precio</label>
+                            <input type="number" name="precio" class="form-control bg-dark-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Stock</label>
+                            <input type="number" name="stock" class="form-control bg-dark-input" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-warning">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary-custom">Agregar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Producto -->
+    <div class="modal fade" id="modalEditarProducto" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light border-warning">
+                <div class="modal-header border-warning">
+                    <h5 class="modal-title text-warning"><i class="bi bi-pencil"></i> Editar Producto</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" id="formEditarProducto">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Nombre</label>
+                            <input type="text" name="nombre" id="editProductoNombre" class="form-control bg-dark-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Precio</label>
+                            <input type="number" name="precio" id="editProductoPrecio" class="form-control bg-dark-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Stock</label>
+                            <input type="number" name="stock" id="editProductoStock" class="form-control bg-dark-input" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-warning">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary-custom">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Agregar Servicio -->
+    <div class="modal fade" id="modalAgregarServicio" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light border-warning">
+                <div class="modal-header border-warning">
+                    <h5 class="modal-title text-warning"><i class="bi bi-scissors"></i> Nuevo Servicio</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" action="{% url 'agregar_servicio' %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Nombre</label>
+                            <input type="text" name="nombre" class="form-control bg-dark-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Descripción</label>
+                            <textarea name="descripcion" class="form-control bg-dark-input" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Precio</label>
+                            <input type="number" name="precio" class="form-control bg-dark-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Duración (minutos)</label>
+                            <input type="number" name="duracion" class="form-control bg-dark-input" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-warning">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary-custom">Guardar Servicio</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Servicio -->
+    <div class="modal fade" id="modalEditarServicio" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light border-warning">
+                <div class="modal-header border-warning">
+                    <h5 class="modal-title text-warning"><i class="bi bi-pencil"></i> Editar Servicio</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" id="formEditarServicio">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Nombre</label>
+                            <input type="text" name="nombre" id="editServicioNombre" class="form-control bg-dark-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Descripción</label>
+                            <textarea name="descripcion" id="editServicioDescripcion" class="form-control bg-dark-input" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Precio</label>
+                            <input type="number" name="precio" id="editServicioPrecio" class="form-control bg-dark-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-yellow">Duración (minutos)</label>
+                            <input type="number" name="duracion" id="editServicioDuracion" class="form-control bg-dark-input" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-warning">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary-custom">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Editar Cita
+        document.getElementById('modalEditarCita').addEventListener('show.bs.modal', function(e) {
+            const btn = e.relatedTarget;
+            document.getElementById('editCitaCliente').value = btn.dataset.cliente;
+            document.getElementById('editCitaFecha').value   = btn.dataset.fecha;
+            document.getElementById('editCitaServicio').value = btn.dataset.servicio;
+            document.getElementById('editCitaHora').value    = btn.dataset.hora;
+            document.getElementById('editCitaBarbero').value = btn.dataset.barbero;
+            document.getElementById('editCitaEstado').value  = btn.dataset.estado;
+            document.getElementById('formEditarCita').action = `/admin-panel/editar-cita/${btn.dataset.id}/`;
+        });
+
+        // Editar Barbero
+        document.getElementById('modalEditarBarbero').addEventListener('show.bs.modal', function(e) {
+            const btn = e.relatedTarget;
+            document.getElementById('editBarberoNombre').value       = btn.dataset.nombre;
+            document.getElementById('editBarberoCedula').value       = btn.dataset.cedula;
+            document.getElementById('editBarberoEspecialidad').value = btn.dataset.especialidad;
+            document.getElementById('editBarberoTelefono').value     = btn.dataset.telefono;
+            document.getElementById('editBarberoEmail').value        = btn.dataset.email;
+            document.getElementById('formEditarBarbero').action = `/admin-panel/editar-barbero/${btn.dataset.id}/`;
+        });
+
+        // Editar Producto
+        document.getElementById('modalEditarProducto').addEventListener('show.bs.modal', function(e) {
+            const btn = e.relatedTarget;
+            document.getElementById('editProductoNombre').value = btn.dataset.nombre;
+            document.getElementById('editProductoPrecio').value = btn.dataset.precio;
+            document.getElementById('editProductoStock').value  = btn.dataset.stock;
+            document.getElementById('formEditarProducto').action = `/admin-panel/editar-producto/${btn.dataset.id}/`;
+        });
+
+        // Editar Servicio
+        document.getElementById('modalEditarServicio').addEventListener('show.bs.modal', function(e) {
+            const btn = e.relatedTarget;
+            document.getElementById('editServicioNombre').value       = btn.dataset.nombre;
+            document.getElementById('editServicioDescripcion').value  = btn.dataset.descripcion;
+            document.getElementById('editServicioPrecio').value       = btn.dataset.precio;
+            document.getElementById('editServicioDuracion').value     = btn.dataset.duracion;
+            document.getElementById('formEditarServicio').action = `/admin-panel/editar-servicio/${btn.dataset.id}/`;
+        });
+    </script>
+</body>
+</html>
