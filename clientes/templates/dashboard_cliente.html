@@ -101,7 +101,7 @@
             </div>
             <div class="col-md-3 text-center text-md-end mt-3 mt-md-0">
                 <button class="btn btn-primary-custom" id="btnAgendar">
-                    <i class="bi bi-calendar-plus"></i> Agendar turno
+                    <i class="bi bi-calendar-plus"></i> Agendar cita
                 </button>
             </div>
         </div>
@@ -112,7 +112,7 @@
                 <div class="stat-card text-center p-3">
                     <i class="bi bi-scissors fs-1"></i>
                     <h3 class="mt-2 text-yellow">{{ proximos|length }}</h3>
-                    <p class="text-light-brown mb-0">Turnos activos</p>
+                    <p class="text-light-brown mb-0">Citas activas</p>
                 </div>
             </div>
             <div class="col-6 col-md-4">
@@ -126,56 +126,83 @@
                 <div class="stat-card text-center p-3">
                     <i class="bi bi-calendar-check fs-1"></i>
                     <h3 class="mt-2 text-yellow" id="contadorTurnos">{{ proximos|length }}</h3>
-                    <p class="text-light-brown mb-0">Próximos turnos</p>
+                    <p class="text-light-brown mb-0">Próximas citas</p>
                 </div>
             </div>
         </div>
 
-        <!-- Formulario nuevo turno -->
-        <div id="formularioTurno" class="form-turno mb-5" style="display: none;">
-            <h4 class="text-yellow mb-4"><i class="bi bi-calendar-plus"></i> Nuevo turno</h4>
-            <form method="POST" action="{% url 'agendar_cita' %}">
-                {% csrf_token %}
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label-custom">Servicio</label>
-                        <select class="form-select bg-dark-input" name="servicio">
-                            <option value="Corte Clásico">Corte Clásico - $12.000</option>
-                            <option value="Barba & Afeitado">Barba & Afeitado - $9.000</option>
-                            <option value="Degradado Fade">Degradado Fade - $14.000</option>
-                            <option value="Combo Rey">Combo Rey - $22.000</option>
-                        </select>
+<!-- Formulario nuevo turno -->
+<div id="formularioTurno" class="form-turno mb-5" style="display: none;">
+    <h4 class="text-yellow mb-4"><i class="bi bi-calendar-plus"></i> Nueva cita</h4>
+    <form method="POST" action="{% url 'agendar_cita' %}">
+        {% csrf_token %}
+        <div class="row g-3">
+
+            <!-- Corte base -->
+            <div class="col-md-4">
+                <label class="form-label-custom">✂️ Corte base</label>
+                <select class="form-select bg-dark-input" name="servicio">
+    {% for servicio in servicios %}
+    <option value="{{ servicio.nombre }}">{{ servicio.nombre }} - ${{ servicio.precio }}</option>
+    {% endfor %}
+</select>
+            </div>
+
+            <!-- Adicionales -->
+            <div class="col-md-4">
+                <label class="form-label-custom">➕ Adicionales</label>
+                <div class="p-3 rounded" style="background-color:#2A211B; border:1px solid #3F2E22;">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="adicionales" value="Arreglo de barba" id="chkBarba">
+                        <label class="form-check-label text-light" for="chkBarba">✂️ Arreglo de barba</label>
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label-custom">Fecha</label>
-                        <input type="date" class="form-control bg-dark-input" name="fecha" id="fecha" required>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="adicionales" value="Cejas" id="chkCejas">
+                        <label class="form-check-label text-light" for="chkCejas">👁️ Cejas</label>
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label-custom">Hora</label>
-                        <select class="form-select bg-dark-input" name="hora">
-                            <option>10:00 AM</option>
-                            <option>11:30 AM</option>
-                            <option>01:00 PM</option>
-                            <option>02:30 PM</option>
-                            <option>04:00 PM</option>
-                            <option>05:30 PM</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label-custom">Barbero</label>
-                        <select class="form-select bg-dark-input" name="barbero">
-                            <option>Javier (Fade)</option>
-                            <option>Marcos (Clásico)</option>
-                            <option>Andrés (Barba)</option>
-                        </select>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="adicionales" value="Diseño y líneas" id="chkDiseno">
+                        <label class="form-check-label text-light" for="chkDiseno">🎨 Diseño / líneas</label>
                     </div>
                 </div>
-                <div class="mt-4 d-flex gap-2 justify-content-end">
-                    <button type="button" class="btn btn-secondary" id="btnCancelarForm">Cancelar</button>
-                    <button type="submit" class="btn btn-primary-custom">Reservar</button>
-                </div>
-            </form>
+            </div>
+
+            <!-- Fecha -->
+            <div class="col-md-4">
+    <label class="form-label-custom">📅 Fecha <small class="text-light-brown">(DD/MM/AAAA)</small></label>
+    <input type="date" class="form-control bg-dark-input" name="fecha" id="fecha" required>
+</div>
+
+            <!-- Hora -->
+            <div class="col-md-4">
+                <label class="form-label-custom">⏰ Hora</label>
+                <select class="form-select bg-dark-input" name="hora">
+                    <option>10:00 AM</option>
+                    <option>11:30 AM</option>
+                    <option>01:00 PM</option>
+                    <option>02:30 PM</option>
+                    <option>04:00 PM</option>
+                    <option>05:30 PM</option>
+                </select>
+            </div>
+
+            <!-- Barbero -->
+            <div class="col-md-4">
+                <label class="form-label-custom">💈 Barbero</label>
+                <select class="form-select bg-dark-input" name="barbero">
+    {% for barbero in barberos %}
+    <option value="{{ barbero.nombre }}">{{ barbero.nombre }} - {{ barbero.especialidad }}</option>
+    {% endfor %}
+</select>
+            </div>
+
         </div>
+        <div class="mt-4 d-flex gap-2 justify-content-end">
+            <button type="button" class="btn btn-secondary" id="btnCancelarForm">Cancelar</button>
+            <button type="submit" class="btn btn-primary-custom">Reservar</button>
+        </div>
+    </form>
+</div>
 
         <!-- Lista de turnos -->
         <div class="row g-4" id="turnos">
@@ -183,7 +210,7 @@
             <div class="col-md-6">
                 <div class="stat-card p-0 overflow-hidden">
                     <div class="card-header-custom">
-                        <i class="bi bi-clock-history"></i> Próximos turnos
+                        <i class="bi bi-clock-history"></i> Próximas citas
                     </div>
                     <div class="p-3">
                         {% for cita in proximos %}
@@ -192,8 +219,11 @@
                                 <div>
                                     <strong class="text-yellow">{{ cita.servicio }}</strong><br>
                                     <small class="text-light-brown">
-                                        📅 {{ cita.fecha }} | ⏰ {{ cita.hora }} | ✂️ {{ cita.barbero }}
-                                    </small>
+    📅 {{ cita.fecha|date:"d/m/Y" }} | ⏰ {{ cita.hora }} | 💈 {{ cita.barbero }}
+</small>
+{% if cita.adicionales and cita.adicionales != 'Ninguno' %}
+<small class="text-yellow d-block mt-1">➕ {{ cita.adicionales }}</small>
+{% endif %}
                                 </div>
                                 <div class="mt-2 mt-sm-0 d-flex align-items-center gap-2">
                                     {% if cita.estado == "Confirmada" %}
@@ -239,38 +269,52 @@
 
         <!-- Servicios rápidos -->
         <div class="stat-card p-4 mt-4">
-            <h5 class="text-yellow mb-3"><i class="bi bi-tags"></i> Servicios destacados</h5>
-            <div class="row g-3">
-                <div class="col-4 col-md-3">
-                    <div class="servicio-rapido text-center">
-                        <i class="bi bi-scissors"></i>
-                        <small class="d-block text-light">Corte Clásico</small>
-                        <small class="text-yellow">$12k</small>
-                    </div>
-                </div>
-                <div class="col-4 col-md-3">
-                    <div class="servicio-rapido text-center">
-                        <i class="bi bi-gender-male"></i>
-                        <small class="d-block text-light">Barba Premium</small>
-                        <small class="text-yellow">$9k</small>
-                    </div>
-                </div>
-                <div class="col-4 col-md-3">
-                    <div class="servicio-rapido text-center">
-                        <i class="bi bi-wind"></i>
-                        <small class="d-block text-light">Degradado Fade</small>
-                        <small class="text-yellow">$14k</small>
-                    </div>
-                </div>
-                <div class="col-4 col-md-3">
-                    <div class="servicio-rapido text-center">
-                        <i class="bi bi-gem"></i>
-                        <small class="d-block text-light">Combo Rey</small>
-                        <small class="text-yellow">$22k</small>
-                    </div>
-                </div>
+    <h5 class="text-yellow mb-3"><i class="bi bi-tags"></i> Servicios destacados</h5>
+    <div class="row g-3">
+        <div class="col-6 col-md-4">
+            <div class="servicio-rapido text-center">
+                <i class="bi bi-scissors"></i>
+                <small class="d-block text-light">Tape Fade</small>
+                <small class="text-yellow">$14k</small>
             </div>
         </div>
+        <div class="col-6 col-md-4">
+            <div class="servicio-rapido text-center">
+                <i class="bi bi-wind"></i>
+                <small class="d-block text-light">Mullet</small>
+                <small class="text-yellow">$14k</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="servicio-rapido text-center">
+                <i class="bi bi-chat-left-text"></i>
+                <small class="d-block text-light">Corte Clásico</small>
+                <small class="text-yellow">$12k</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="servicio-rapido text-center">
+                <i class="bi bi-fullscreen-exit"></i>
+                <small class="d-block text-light">Buzz Cut</small>
+                <small class="text-yellow">$10k</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="servicio-rapido text-center">
+                <i class="bi bi-layers"></i>
+                <small class="d-block text-light">Corte Texturizado</small>
+                <small class="text-yellow">$13k</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="servicio-rapido text-center">
+                <i class="bi bi-plus-circle"></i>
+                <small class="d-block text-light">Adicionales</small>
+                <small class="text-yellow">Desde $5k</small>
+            </div>
+        </div>
+    </div>
+</div>
     </div>
 
     <!-- Footer -->

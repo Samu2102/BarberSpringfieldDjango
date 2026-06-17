@@ -665,13 +665,19 @@ h2 {
 }
 
 .login-card-custom {
-  background-color: #1E1A15;
-  border-radius: 32px;
-  padding: 2.5rem;
-  max-width: 450px;
-  width: 100%;
-  border: 1px solid rgba(244, 197, 66, 0.3);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    background-color: #1E1A15;
+    border-radius: 32px;
+    padding: 2.5rem;
+    max-width: 480px;
+    width: 100%;
+    border: 1px solid rgba(244, 197, 66, 0.3);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.login-card-custom h1 {
+    font-size: 1.8rem;
+    word-break: break-word;
 }
 
 .credencial-demo {

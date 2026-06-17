@@ -113,7 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'UTC'
 
@@ -131,3 +131,6 @@ STATICFILES_DIRS = [
 ]
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
+DATE_FORMAT = 'd/m/Y'
+USE_L10N = True
+USE_I18N = True

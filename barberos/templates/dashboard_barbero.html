@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </h1>
 
             <p>
-                Consulta, confirma y gestiona tus citas desde un solo lugar.
+                Consulta, confirma y gestiona tus turnos desde un solo lugar.
             </p>
 
         </div>
@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         <h3>{{ citas|length }}</h3>
 
-                        <p>Citas Programadas</p>
+                        <p>Turnos Programados</p>
 
                     </div>
 
@@ -175,7 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="tabla-citas">
 
                 <h2 class="mb-4">
-                    Próximas Citas
+                    Próximos Turnos
                 </h2>
 
                 <div class="table-responsive">
@@ -184,12 +184,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         <thead>
     <tr>
-        <th>Cliente</th>
-        <th>Hora</th>
-        <th>Servicio</th>
-        <th>Estado</th>
-        <th>Acciones</th>
-    </tr>
+    <th>Cliente</th>
+    <th>Fecha</th>
+    <th>Hora</th>
+    <th>Servicio</th>
+    <th>Estado</th>
+    <th>Acciones</th>
+</tr>
 </thead>
 
 <tbody>
@@ -198,11 +199,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <tr>
 
-    <td>{{ cita.cliente }}</td>
-
-    <td>{{ cita.hora }}</td>
-
-    <td>{{ cita.servicio }}</td>
+<td>{{ cita.cliente }}</td>
+<td>{{ cita.fecha|date:"d/m/Y" }}</td>
+<td>{{ cita.hora }}</td>
+<td>{{ cita.servicio }}</td>
 
     <td>
 

@@ -140,7 +140,7 @@
                         <tr>
                             <td>{{ cita.cliente }}</td>
                             <td>{{ cita.servicio }}</td>
-                            <td>{{ cita.fecha }}</td>
+                            <td>{{ cita.fecha|date:"d/m/Y" }}</td>
                             <td>{{ cita.hora }}</td>
                             <td>{{ cita.barbero }}</td>
                             <td>
@@ -153,18 +153,23 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-warning"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalEditarCita"
-                                    data-id="{{ cita.id }}"
-                                    data-cliente="{{ cita.cliente }}"
-                                    data-servicio="{{ cita.servicio }}"
-                                    data-fecha="{{ cita.fecha }}"
-                                    data-hora="{{ cita.hora }}"
-                                    data-barbero="{{ cita.barbero }}"
-                                    data-estado="{{ cita.estado }}">
-                                    <i class="bi bi-pencil"></i> Editar
+    <button class="btn btn-sm btn-warning"
+        data-bs-toggle="modal"
+        data-bs-target="#modalEditarCita"
+        data-id="{{ cita.id }}"
+        data-cliente="{{ cita.cliente }}"
+        data-servicio="{{ cita.servicio }}"
+        data-fecha="{{ cita.fecha }}"
+        data-hora="{{ cita.hora }}"
+        data-barbero="{{ cita.barbero }}"
+        data-estado="{{ cita.estado }}">
+        <i class="bi bi-pencil"></i> Editar
                                 </button>
+                                <a href="{% url 'eliminar_cita' cita.id %}"
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('¿Eliminar esta cita?')">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </a>
                             </td>
                         </tr>
                         {% empty %}
@@ -191,30 +196,34 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for barbero in barberos %}
+                        {% for b in barberos %}
                         <tr>
-                            <td>{{ barbero.nombre }}</td>
-                            <td>{{ barbero.cedula }}</td>
-                            <td>{{ barbero.especialidad }}</td>
-                            <td>{{ barbero.telefono }}</td>
-                            <td>{{ barbero.email }}</td>
-                            <td>
-                                <button class="btn btn-sm btn-warning"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalEditarBarbero"
-                                    data-id="{{ barbero.id }}"
-                                    data-nombre="{{ barbero.nombre }}"
-                                    data-cedula="{{ barbero.cedula }}"
-                                    data-especialidad="{{ barbero.especialidad }}"
-                                    data-telefono="{{ barbero.telefono }}"
-                                    data-email="{{ barbero.email }}">
-                                    <i class="bi bi-pencil"></i> Editar
-                                </button>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr><td colspan="6" class="text-center text-light-brown">No hay barberos registrados.</td></tr>
-                        {% endfor %}
+                            <td>{{ b.nombre }}</td>
+<td>{{ b.cedula }}</td>
+<td>{{ b.especialidad }}</td>
+<td>{{ b.telefono }}</td>
+<td>{{ b.email }}</td>
+<td>
+    <button class="btn btn-sm btn-warning"
+        data-bs-toggle="modal"
+        data-bs-target="#modalEditarBarbero"
+        data-id="{{ b.id }}"
+        data-nombre="{{ b.nombre }}"
+        data-cedula="{{ b.cedula }}"
+        data-especialidad="{{ b.especialidad }}"
+        data-telefono="{{ b.telefono }}"
+        data-email="{{ b.email }}">
+        <i class="bi bi-pencil"></i> Editar
+    </button>
+    <a href="{% url 'eliminar_barbero' b.id %}"
+       class="btn btn-sm btn-danger"
+       onclick="return confirm('¿Eliminar este barbero?')">
+        <i class="bi bi-trash"></i> Eliminar
+    </a>
+</td>
+{% empty %}
+<tr><td colspan="6" class="text-center text-light-brown">No hay barberos registrados.</td></tr>
+{% endfor %}
                     </tbody>
                 </table>
             </div>
@@ -259,6 +268,11 @@
                                     data-stock="{{ producto.stock }}">
                                     <i class="bi bi-pencil"></i> Editar
                                 </button>
+                                <a href="{% url 'eliminar_producto' producto.id %}"
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('¿Eliminar este producto?')">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </a>
                             </td>
                         </tr>
                         {% empty %}
@@ -301,6 +315,11 @@
                                     data-duracion="{{ servicio.duracion }}">
                                     <i class="bi bi-pencil"></i> Editar
                                 </button>
+                                <a href="{% url 'eliminar_servicio' servicio.id %}"
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('¿Eliminar este servicio?')">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </a>
                             </td>
                         </tr>
                         {% empty %}

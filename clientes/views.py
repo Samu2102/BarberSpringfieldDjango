@@ -1,28 +1,35 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from citas.models import Cita
+from citas.models import Cita, Barbero, Servicio
 
 @login_required(login_url='login')
 def panel_cliente(request):
     nombre_cliente = request.user.first_name
     proximos = Cita.objects.filter(cliente=nombre_cliente).exclude(estado="Cancelada")
     historial = Cita.objects.filter(cliente=nombre_cliente, estado="Cancelada")
+    barberos  = Barbero.objects.all()
+    servicios = Servicio.objects.all()
     return render(request, 'dashboard_cliente.html', {
-        'nombre': nombre_cliente,
+        'nombre'  : nombre_cliente,
         'proximos': proximos,
         'historial': historial,
+        'barberos': barberos,
+        'servicios': servicios,
     })
 
 @login_required(login_url='login')
 def agendar_cita(request):
     if request.method == "POST":
+        adicionales = request.POST.getlist('adicionales')
+        adicionales_str = ', '.join(adicionales) if adicionales else 'Ninguno'
         Cita.objects.create(
-            cliente  = request.user.first_name,
-            servicio = request.POST.get('servicio'),
-            fecha    = request.POST.get('fecha'),
-            hora     = request.POST.get('hora'),
-            barbero  = request.POST.get('barbero'),
-            estado   = "Pendiente",
+            cliente     = request.user.first_name,
+            servicio    = request.POST.get('servicio'),
+            adicionales = adicionales_str,
+            fecha       = request.POST.get('fecha'),
+            hora        = request.POST.get('hora'),
+            barbero     = request.POST.get('barbero'),
+            estado      = "Pendiente",
         )
         return redirect('panel_cliente')
     return redirect('panel_cliente')

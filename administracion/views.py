@@ -112,3 +112,35 @@ def editar_servicio(request, id):
         servicio.save()
         messages.success(request, 'Servicio actualizado correctamente')
     return redirect('panel_admin')
+
+@login_required(login_url='login')
+@user_passes_test(es_admin, login_url='login')
+def eliminar_cita(request, id):
+    cita = get_object_or_404(Cita, id=id)
+    cita.delete()
+    messages.success(request, 'Cita eliminada correctamente')
+    return redirect('panel_admin')
+
+@login_required(login_url='login')
+@user_passes_test(es_admin, login_url='login')
+def eliminar_barbero(request, id):
+    barbero = get_object_or_404(Barbero, id=id)
+    barbero.delete()
+    messages.success(request, 'Barbero eliminado correctamente')
+    return redirect('panel_admin')
+
+@login_required(login_url='login')
+@user_passes_test(es_admin, login_url='login')
+def eliminar_producto(request, id):
+    producto = get_object_or_404(Producto, id=id)
+    producto.delete()
+    messages.success(request, 'Producto eliminado correctamente')
+    return redirect('panel_admin')
+
+@login_required(login_url='login')
+@user_passes_test(es_admin, login_url='login')
+def eliminar_servicio(request, id):
+    servicio = get_object_or_404(Servicio, id=id)
+    servicio.delete()
+    messages.success(request, 'Servicio eliminado correctamente')
+    return redirect('panel_admin')
