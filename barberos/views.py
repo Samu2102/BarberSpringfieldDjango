@@ -20,3 +20,4 @@ def cancelar_cita(request, id):
     cita.estado = "Cancelada"
     cita.save()
     return redirect('panel_barbero')
+
