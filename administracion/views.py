@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from citas.models import Cita, Barbero, Producto, Servicio
 
@@ -13,12 +14,34 @@ def panel_admin(request):
     barberos  = Barbero.objects.all()
     productos = Producto.objects.all()
     servicios = Servicio.objects.all()
+    usuarios  = User.objects.filter(is_superuser=False).order_by('first_name')
     return render(request, 'dashboard_admin.html', {
-        'citas': citas,
-        'barberos': barberos,
+        'citas'    : citas,
+        'barberos' : barberos,
         'productos': productos,
         'servicios': servicios,
+        'usuarios' : usuarios,
     })
+
+@login_required(login_url='login')
+@user_passes_test(es_admin, login_url='login')
+def asignar_barbero(request, id):
+    user = get_object_or_404(User, id=id)
+    grupo, _ = Group.objects.get_or_create(name='barberos')
+    user.groups.add(grupo)
+    user.save()
+    messages.success(request, f'{user.first_name} ahora tiene rol de barbero')
+    return redirect('panel_admin')
+
+@login_required(login_url='login')
+@user_passes_test(es_admin, login_url='login')
+def quitar_barbero(request, id):
+    user = get_object_or_404(User, id=id)
+    grupo, _ = Group.objects.get_or_create(name='barberos')
+    user.groups.remove(grupo)
+    user.save()
+    messages.success(request, f'{user.first_name} ya no es barbero')
+    return redirect('panel_admin')
 
 @login_required(login_url='login')
 @user_passes_test(es_admin, login_url='login')

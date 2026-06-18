@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,14 +10,15 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{% static 'styles.css' %}">
 </head>
+
 <body>
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
             <a class="navbar-brand" href="{% url 'inicio' %}">
-                <img src="{% static 'logo.jpeg' %}" alt="Logo" style="height:40px; width:40px; object-fit:cover; border-radius:50%; margin-right:8px;">
-                Barber<span>Springfield</span>
+                <img src="{% static 'logo.jpeg' %}" alt="Logo" style="height:40px; width:40px; object-fit:cover; border-radius:50%; margin-right:8px;"> Barber
+                <span>Springfield</span>
             </a>
             <div class="d-flex align-items-center gap-3">
                 <div class="user-info">
@@ -45,7 +47,7 @@
                 </div>
                 <div class="modal-footer border-warning">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button class="btn btn-primary-custom"onclick="window.location.href='{% url 'logout' %}'">Cerrar Sesión</button>
+                    <button class="btn btn-primary-custom" onclick="window.location.href='{% url 'logout' %}'">Cerrar Sesión</button>
                 </div>
             </div>
         </div>
@@ -54,14 +56,12 @@
     <div class="container py-5">
         <h1 class="mb-4">Bienvenido al Panel de Administración</h1>
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
+        {% if messages %} {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %} {% endif %}
 
         <!-- Tarjetas de estadísticas -->
         <div class="row g-4 mb-5">
@@ -114,8 +114,53 @@
             </div>
             <div class="col-md-3 mb-3">
                 <a href="{% url 'registro' %}" class="btn btn-primary-custom w-100 py-3">
-                    <i class="bi bi-person-plus"></i> Nuevo Cliente
+                    <i class="bi bi-person-plus"></i> Nuevo Usuario
                 </a>
+            </div>
+        </div>
+
+        <!-- Tabla de usuarios -->
+        <div class="stat-card p-4 mb-5">
+            <h5 class="mb-3"><i class="bi bi-people"></i> Usuarios registrados</h5>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Rol actual</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in usuarios %}
+                        <tr>
+                            <td>{{ u.first_name }} {{ u.last_name }}</td>
+                            <td>{{ u.email }}</td>
+                            <td>
+                                {% if u.groups.all %}
+                                <span class="badge bg-warning text-dark">Barbero</span> {% else %}
+                                <span class="badge bg-primary">Cliente</span> {% endif %}
+                            </td>
+                            <td>
+                                {% if u.groups.all %}
+                                <a href="{% url 'quitar_barbero' u.id %}" class="btn btn-sm btn-secondary" onclick="return confirm('¿Quitar rol de barbero?')">
+                                    <i class="bi bi-person-dash"></i> Quitar barbero
+                                </a>
+                                {% else %}
+                                <a href="{% url 'asignar_barbero' u.id %}" class="btn btn-sm btn-warning" onclick="return confirm('¿Asignar como barbero?')">
+                                    <i class="bi bi-person-badge"></i> Hacer barbero
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-light-brown">No hay usuarios registrados.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -145,35 +190,24 @@
                             <td>{{ cita.barbero }}</td>
                             <td>
                                 {% if cita.estado == "Confirmada" %}
-                                    <span class="badge bg-success">Confirmada</span>
-                                {% elif cita.estado == "Pendiente" %}
-                                    <span class="badge bg-warning text-dark">Pendiente</span>
-                                {% else %}
-                                    <span class="badge bg-danger">Cancelada</span>
-                                {% endif %}
+                                <span class="badge bg-success">Confirmada</span> {% elif cita.estado == "Pendiente" %}
+                                <span class="badge bg-warning text-dark">Pendiente</span> {% else %}
+                                <span class="badge bg-danger">Cancelada</span> {% endif %}
                             </td>
                             <td>
-    <button class="btn btn-sm btn-warning"
-        data-bs-toggle="modal"
-        data-bs-target="#modalEditarCita"
-        data-id="{{ cita.id }}"
-        data-cliente="{{ cita.cliente }}"
-        data-servicio="{{ cita.servicio }}"
-        data-fecha="{{ cita.fecha }}"
-        data-hora="{{ cita.hora }}"
-        data-barbero="{{ cita.barbero }}"
-        data-estado="{{ cita.estado }}">
-        <i class="bi bi-pencil"></i> Editar
+                                <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditarCita" data-id="{{ cita.id }}" data-cliente="{{ cita.cliente }}" data-servicio="{{ cita.servicio }}" data-fecha="{{ cita.fecha }}" data-hora="{{ cita.hora }}" data-barbero="{{ cita.barbero }}"
+                                    data-estado="{{ cita.estado }}">
+                                    <i class="bi bi-pencil"></i> Editar
                                 </button>
-                                <a href="{% url 'eliminar_cita' cita.id %}"
-                                   class="btn btn-sm btn-danger"
-                                   onclick="return confirm('¿Eliminar esta cita?')">
+                                <a href="{% url 'eliminar_cita' cita.id %}" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar esta cita?')">
                                     <i class="bi bi-trash"></i> Eliminar
                                 </a>
                             </td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="7" class="text-center text-light-brown">No hay citas registradas.</td></tr>
+                        <tr>
+                            <td colspan="7" class="text-center text-light-brown">No hay citas registradas.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -199,31 +233,25 @@
                         {% for b in barberos %}
                         <tr>
                             <td>{{ b.nombre }}</td>
-<td>{{ b.cedula }}</td>
-<td>{{ b.especialidad }}</td>
-<td>{{ b.telefono }}</td>
-<td>{{ b.email }}</td>
-<td>
-    <button class="btn btn-sm btn-warning"
-        data-bs-toggle="modal"
-        data-bs-target="#modalEditarBarbero"
-        data-id="{{ b.id }}"
-        data-nombre="{{ b.nombre }}"
-        data-cedula="{{ b.cedula }}"
-        data-especialidad="{{ b.especialidad }}"
-        data-telefono="{{ b.telefono }}"
-        data-email="{{ b.email }}">
-        <i class="bi bi-pencil"></i> Editar
-    </button>
-    <a href="{% url 'eliminar_barbero' b.id %}"
-       class="btn btn-sm btn-danger"
-       onclick="return confirm('¿Eliminar este barbero?')">
-        <i class="bi bi-trash"></i> Eliminar
-    </a>
-</td>
-{% empty %}
-<tr><td colspan="6" class="text-center text-light-brown">No hay barberos registrados.</td></tr>
-{% endfor %}
+                            <td>{{ b.cedula }}</td>
+                            <td>{{ b.especialidad }}</td>
+                            <td>{{ b.telefono }}</td>
+                            <td>{{ b.email }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditarBarbero" data-id="{{ b.id }}" data-nombre="{{ b.nombre }}" data-cedula="{{ b.cedula }}" data-especialidad="{{ b.especialidad }}" data-telefono="{{ b.telefono }}"
+                                    data-email="{{ b.email }}">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </button>
+                                <a href="{% url 'eliminar_barbero' b.id %}" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este barbero?')">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-light-brown">No hay barberos registrados.</td>
+                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
@@ -251,32 +279,23 @@
                             <td>{{ producto.stock }}</td>
                             <td>
                                 {% if producto.stock >= 10 %}
-                                    <span class="badge bg-success">Suficiente</span>
-                                {% elif producto.stock >= 6 %}
-                                    <span class="badge bg-warning text-dark">Medio</span>
-                                {% else %}
-                                    <span class="badge bg-danger">Bajo</span>
-                                {% endif %}
+                                <span class="badge bg-success">Suficiente</span> {% elif producto.stock >= 6 %}
+                                <span class="badge bg-warning text-dark">Medio</span> {% else %}
+                                <span class="badge bg-danger">Bajo</span> {% endif %}
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-warning"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalEditarProducto"
-                                    data-id="{{ producto.id }}"
-                                    data-nombre="{{ producto.nombre }}"
-                                    data-precio="{{ producto.precio }}"
-                                    data-stock="{{ producto.stock }}">
+                                <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditarProducto" data-id="{{ producto.id }}" data-nombre="{{ producto.nombre }}" data-precio="{{ producto.precio }}" data-stock="{{ producto.stock }}">
                                     <i class="bi bi-pencil"></i> Editar
                                 </button>
-                                <a href="{% url 'eliminar_producto' producto.id %}"
-                                   class="btn btn-sm btn-danger"
-                                   onclick="return confirm('¿Eliminar este producto?')">
+                                <a href="{% url 'eliminar_producto' producto.id %}" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este producto?')">
                                     <i class="bi bi-trash"></i> Eliminar
                                 </a>
                             </td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="5" class="text-center text-light-brown">No hay productos registrados.</td></tr>
+                        <tr>
+                            <td colspan="5" class="text-center text-light-brown">No hay productos registrados.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -305,25 +324,18 @@
                             <td>${{ servicio.precio }}</td>
                             <td>{{ servicio.duracion }} min</td>
                             <td>
-                                <button class="btn btn-sm btn-warning"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalEditarServicio"
-                                    data-id="{{ servicio.id }}"
-                                    data-nombre="{{ servicio.nombre }}"
-                                    data-descripcion="{{ servicio.descripcion }}"
-                                    data-precio="{{ servicio.precio }}"
-                                    data-duracion="{{ servicio.duracion }}">
+                                <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditarServicio" data-id="{{ servicio.id }}" data-nombre="{{ servicio.nombre }}" data-descripcion="{{ servicio.descripcion }}" data-precio="{{ servicio.precio }}" data-duracion="{{ servicio.duracion }}">
                                     <i class="bi bi-pencil"></i> Editar
                                 </button>
-                                <a href="{% url 'eliminar_servicio' servicio.id %}"
-                                   class="btn btn-sm btn-danger"
-                                   onclick="return confirm('¿Eliminar este servicio?')">
+                                <a href="{% url 'eliminar_servicio' servicio.id %}" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este servicio?')">
                                     <i class="bi bi-trash"></i> Eliminar
                                 </a>
                             </td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="5" class="text-center text-light-brown">No hay servicios registrados.</td></tr>
+                        <tr>
+                            <td colspan="5" class="text-center text-light-brown">No hay servicios registrados.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -349,10 +361,9 @@
                         <div class="mb-3">
                             <label class="form-label text-yellow">Servicio</label>
                             <select name="servicio" id="editCitaServicio" class="form-select bg-dark-input">
-                                <option>Corte Clásico</option>
-                                <option>Barba & Afeitado</option>
-                                <option>Degradado Fade</option>
-                                <option>Combo Rey</option>
+                                {% for servicio in servicios %}
+                                <option value="{{ servicio.nombre }}">{{ servicio.nombre }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="mb-3">
@@ -373,9 +384,9 @@
                         <div class="mb-3">
                             <label class="form-label text-yellow">Barbero</label>
                             <select name="barbero" id="editCitaBarbero" class="form-select bg-dark-input">
-                                <option>Javier (Fade)</option>
-                                <option>Marcos (Clásico)</option>
-                                <option>Andrés (Barba)</option>
+                                {% for b in barberos %}
+                                <option value="{{ b.nombre }}">{{ b.nombre }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="mb-3">
@@ -620,47 +631,44 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Editar Cita
         document.getElementById('modalEditarCita').addEventListener('show.bs.modal', function(e) {
             const btn = e.relatedTarget;
             document.getElementById('editCitaCliente').value = btn.dataset.cliente;
-            document.getElementById('editCitaFecha').value   = btn.dataset.fecha;
+            document.getElementById('editCitaFecha').value = btn.dataset.fecha;
             document.getElementById('editCitaServicio').value = btn.dataset.servicio;
-            document.getElementById('editCitaHora').value    = btn.dataset.hora;
+            document.getElementById('editCitaHora').value = btn.dataset.hora;
             document.getElementById('editCitaBarbero').value = btn.dataset.barbero;
-            document.getElementById('editCitaEstado').value  = btn.dataset.estado;
+            document.getElementById('editCitaEstado').value = btn.dataset.estado;
             document.getElementById('formEditarCita').action = `/admin-panel/editar-cita/${btn.dataset.id}/`;
         });
 
-        // Editar Barbero
         document.getElementById('modalEditarBarbero').addEventListener('show.bs.modal', function(e) {
             const btn = e.relatedTarget;
-            document.getElementById('editBarberoNombre').value       = btn.dataset.nombre;
-            document.getElementById('editBarberoCedula').value       = btn.dataset.cedula;
+            document.getElementById('editBarberoNombre').value = btn.dataset.nombre;
+            document.getElementById('editBarberoCedula').value = btn.dataset.cedula;
             document.getElementById('editBarberoEspecialidad').value = btn.dataset.especialidad;
-            document.getElementById('editBarberoTelefono').value     = btn.dataset.telefono;
-            document.getElementById('editBarberoEmail').value        = btn.dataset.email;
+            document.getElementById('editBarberoTelefono').value = btn.dataset.telefono;
+            document.getElementById('editBarberoEmail').value = btn.dataset.email;
             document.getElementById('formEditarBarbero').action = `/admin-panel/editar-barbero/${btn.dataset.id}/`;
         });
 
-        // Editar Producto
         document.getElementById('modalEditarProducto').addEventListener('show.bs.modal', function(e) {
             const btn = e.relatedTarget;
             document.getElementById('editProductoNombre').value = btn.dataset.nombre;
             document.getElementById('editProductoPrecio').value = btn.dataset.precio;
-            document.getElementById('editProductoStock').value  = btn.dataset.stock;
+            document.getElementById('editProductoStock').value = btn.dataset.stock;
             document.getElementById('formEditarProducto').action = `/admin-panel/editar-producto/${btn.dataset.id}/`;
         });
 
-        // Editar Servicio
         document.getElementById('modalEditarServicio').addEventListener('show.bs.modal', function(e) {
             const btn = e.relatedTarget;
-            document.getElementById('editServicioNombre').value       = btn.dataset.nombre;
-            document.getElementById('editServicioDescripcion').value  = btn.dataset.descripcion;
-            document.getElementById('editServicioPrecio').value       = btn.dataset.precio;
-            document.getElementById('editServicioDuracion').value     = btn.dataset.duracion;
+            document.getElementById('editServicioNombre').value = btn.dataset.nombre;
+            document.getElementById('editServicioDescripcion').value = btn.dataset.descripcion;
+            document.getElementById('editServicioPrecio').value = btn.dataset.precio;
+            document.getElementById('editServicioDuracion').value = btn.dataset.duracion;
             document.getElementById('formEditarServicio').action = `/admin-panel/editar-servicio/${btn.dataset.id}/`;
         });
     </script>
 </body>
+
 </html>
