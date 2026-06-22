@@ -97,11 +97,7 @@
 
         <!-- Acciones rápidas -->
         <div class="row mb-5">
-            <div class="col-md-3 mb-3">
-                <button class="btn btn-primary-custom w-100 py-3" data-bs-toggle="modal" data-bs-target="#modalAgregarBarbero">
-                    <i class="bi bi-person-badge"></i> Nuevo Barbero
-                </button>
-            </div>
+            
             <div class="col-md-3 mb-3">
                 <button class="btn btn-primary-custom w-100 py-3" data-bs-toggle="modal" data-bs-target="#modalAgregarProducto">
                     <i class="bi bi-box-seam"></i> Nuevo Producto
@@ -242,9 +238,7 @@
                                     data-email="{{ b.email }}">
                                     <i class="bi bi-pencil"></i> Editar
                                 </button>
-                                <a href="{% url 'eliminar_barbero' b.id %}" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este barbero?')">
-                                    <i class="bi bi-trash"></i> Eliminar
-                                </a>
+                            
                             </td>
                         </tr>
                         {% empty %}

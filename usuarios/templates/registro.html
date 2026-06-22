@@ -19,11 +19,16 @@
                 <p class="text-light-brown">Registro de nuevos usuarios</p>
             </div>
 
-            {% if messages %} {% for message in messages %}
-            <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}">
+            {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
                 {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-            {% endfor %} {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
 
             <form method="POST">
                 {% csrf_token %}
@@ -36,6 +41,10 @@
                         <label class="form-label text-yellow">Apellido</label>
                         <input type="text" name="apellido" class="form-control form-control-registro" required>
                     </div>
+                    <div class="mb-3">
+    <label class="form-label text-yellow">Cédula</label>
+    <input type="text" name="cedula" class="form-control form-control-registro" required>
+</div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label text-yellow">Correo Electrónico</label>

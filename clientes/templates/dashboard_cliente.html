@@ -31,6 +31,54 @@
             actualizarMenu();
         });
     </script>
+<script>
+    const preciosServicios = {
+        {% for servicio in servicios %}
+        "{{ servicio.nombre }}": {{ servicio.precio }},
+        {% endfor %}
+    };
+
+    const precioAdicional = 5000;
+
+    function formatPeso(valor) {
+        return '$' + valor.toLocaleString('es-CO');
+    }
+
+    function calcularTotal() {
+        const servicioRadio  = document.querySelector('input[name="servicio"]:checked');
+        const checkboxesAdic = document.querySelectorAll('input[name="adicionales"]:checked');
+        const checkboxesProd = document.querySelectorAll('input[name="productos"]:checked');
+
+        const nombreServicio = servicioRadio ? servicioRadio.value : '';
+        const precioBase     = preciosServicios[nombreServicio] || 0;
+        const precioAdic     = checkboxesAdic.length * precioAdicional;
+
+        let precioProd = 0;
+        checkboxesProd.forEach(function(chk) {
+            precioProd += parseInt(chk.dataset.precio) || 0;
+        });
+
+        const total = precioBase + precioAdic + precioProd;
+
+        document.getElementById('precioBase').textContent        = formatPeso(precioBase);
+        document.getElementById('precioAdicionales').textContent = formatPeso(precioAdic);
+        document.getElementById('precioProductos').textContent   = formatPeso(precioProd);
+        document.getElementById('totalPagar').textContent        = formatPeso(total);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('input[name="servicio"]').forEach(function(radio) {
+            radio.addEventListener('change', calcularTotal);
+        });
+        document.querySelectorAll('input[name="adicionales"]').forEach(function(chk) {
+            chk.addEventListener('change', calcularTotal);
+        });
+        document.querySelectorAll('input[name="productos"]').forEach(function(chk) {
+            chk.addEventListener('change', calcularTotal);
+        });
+        calcularTotal();
+    });
+</script>
 </head>
 
 <body>
@@ -140,32 +188,95 @@
 
             <!-- Corte base -->
             <div class="col-md-4">
-                <label class="form-label-custom">✂️ Corte base</label>
-                <select class="form-select bg-dark-input" name="servicio">
-    {% for servicio in servicios %}
-    <option value="{{ servicio.nombre }}">{{ servicio.nombre }} - ${{ servicio.precio }}</option>
-    {% endfor %}
-</select>
-            </div>
+    <label class="form-label-custom">✂️ Cortes</label>
+    <div class="p-3 rounded" style="background-color:#2A211B; border:1px solid #3F2E22;">
+        {% for servicio in servicios %}
+        <div class="form-check mb-2">
+            <input class="form-check-input servicio-radio"
+                   type="radio"
+                   name="servicio"
+                   value="{{ servicio.nombre }}"
+                   id="serv{{ servicio.id }}"
+                   data-precio="{{ servicio.precio }}"
+                   {% if forloop.first %}checked{% endif %}>
+            <label class="form-check-label text-light" for="serv{{ servicio.id }}">
+                ✂️ {{ servicio.nombre }}
+                <small class="text-yellow">${{ servicio.precio|floatformat:0 }}</small>
+            </label>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 
             <!-- Adicionales -->
             <div class="col-md-4">
                 <label class="form-label-custom">➕ Adicionales</label>
                 <div class="p-3 rounded" style="background-color:#2A211B; border:1px solid #3F2E22;">
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" name="adicionales" value="Arreglo de barba" id="chkBarba">
-                        <label class="form-check-label text-light" for="chkBarba">✂️ Arreglo de barba</label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" name="adicionales" value="Cejas" id="chkCejas">
-                        <label class="form-check-label text-light" for="chkCejas">👁️ Cejas</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="adicionales" value="Diseño y líneas" id="chkDiseno">
-                        <label class="form-check-label text-light" for="chkDiseno">🎨 Diseño / líneas</label>
-                    </div>
+    <input class="form-check-input" type="checkbox" name="adicionales" value="Arreglo de barba" id="chkBarba">
+    <label class="form-check-label text-light" for="chkBarba">
+        ✂️ Arreglo de barba <small class="text-yellow">$5.000</small>
+    </label>
+</div>
+<div class="form-check mb-2">
+    <input class="form-check-input" type="checkbox" name="adicionales" value="Cejas" id="chkCejas">
+    <label class="form-check-label text-light" for="chkCejas">
+        👁️ Cejas <small class="text-yellow">$5.000</small>
+    </label>
+</div>
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" name="adicionales" value="Diseño y líneas" id="chkDiseno">
+    <label class="form-check-label text-light" for="chkDiseno">
+        🎨 Diseño / líneas <small class="text-yellow">$5.000</small>
+    </label>
+</div>
                 </div>
             </div>
+            <!-- Productos -->
+<div class="col-md-4">
+    <label class="form-label-custom">🧴 Productos</label>
+    <div class="p-3 rounded" style="background-color:#2A211B; border:1px solid #3F2E22;">
+        {% for producto in productos %}
+        <div class="form-check mb-2">
+            <input class="form-check-input producto-check"
+                   type="checkbox"
+                   name="productos"
+                   value="{{ producto.nombre }}"
+                   id="prod{{ producto.id }}"
+                   data-precio="{{ producto.precio }}">
+            <label class="form-check-label text-light" for="prod{{ producto.id }}">
+                🧴 {{ producto.nombre }}
+                <small class="text-yellow">${{ producto.precio|floatformat:0 }}</small>
+            </label>
+        </div>
+        {% empty %}
+        <p class="text-light-brown small">No hay productos disponibles.</p>
+        {% endfor %}
+    </div>
+</div>
+            <!-- Total en tiempo real -->
+<div class="col-12">
+    <div class="p-3 rounded" style="background-color:#2A211B; border:1px solid #F4C542;">
+        <div class="d-flex justify-content-between align-items-center">
+            <span class="text-light-brown">Corte:</span>
+            <span class="text-yellow" id="precioBase">$0</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-1">
+            <span class="text-light-brown">Adicionales:</span>
+            <span class="text-yellow" id="precioAdicionales">$0</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-1">
+            <span class="text-light-brown">Productos:</span>
+            <span class="text-yellow" id="precioProductos">$0</span>
+        </div>
+        <hr style="border-color:#3F2E22;">
+        <div class="d-flex justify-content-between align-items-center">
+            <strong class="text-white">Total a pagar:</strong>
+            <strong class="text-yellow fs-5" id="totalPagar">$0</strong>
+        </div>
+    </div>
+</div>
+
 
             <!-- Fecha -->
             <div class="col-md-4">

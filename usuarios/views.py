@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
+from .models import Perfil
 
 def login_view(request):
     if request.method == "POST":
@@ -34,6 +35,7 @@ def registro_view(request):
     if request.method == "POST":
         nombre   = request.POST.get('nombre')
         apellido = request.POST.get('apellido')
+        cedula   = request.POST.get('cedula')
         email    = request.POST.get('email')
         telefono = request.POST.get('telefono')
         password = request.POST.get('password')
@@ -58,8 +60,15 @@ def registro_view(request):
             first_name = nombre,
             last_name  = apellido,
         )
+        Perfil.objects.create(
+    usuario=user,
+    cedula=cedula,
+    telefono=telefono
+)
         messages.success(request, '¡Registro exitoso! Ya puedes iniciar sesión')
         return redirect('login')
+    
+        
 
     return render(request, 'registro.html')
 

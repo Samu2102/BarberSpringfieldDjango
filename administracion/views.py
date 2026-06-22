@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
-from citas.models import Cita, Barbero, Producto, Servicio
+from citas.models import Cita, Barbero, Servicio
+from inventario.models import Producto
+from usuarios.models import Perfil
 
 def es_admin(user):
     return user.is_superuser
@@ -39,7 +41,25 @@ def asignar_barbero(request, id):
     grupo, _ = Group.objects.get_or_create(name='barberos')
     user.groups.add(grupo)
 
-    user.save()
+    # Buscar el perfil real del usuario
+    perfil = Perfil.objects.filter(usuario=user).first()
+
+    if not perfil:
+        messages.error(
+            request,
+            f'{user.first_name} no tiene perfil registrado.'
+        )
+        return redirect('panel_admin')
+
+    # Crear registro de barbero si no existe
+    if not Barbero.objects.filter(email=user.email).exists():
+        Barbero.objects.create(
+            nombre=f"{user.first_name} {user.last_name}",
+            cedula=perfil.cedula,
+            telefono=perfil.telefono,
+            especialidad="General",
+            email=user.email,
+        )
 
     messages.success(
         request,
@@ -52,10 +72,19 @@ def asignar_barbero(request, id):
 @user_passes_test(es_admin, login_url='login')
 def quitar_barbero(request, id):
     user = get_object_or_404(User, id=id)
+
     grupo, _ = Group.objects.get_or_create(name='barberos')
     user.groups.remove(grupo)
+
+    Barbero.objects.filter(email=user.email).delete()
+
     user.save()
-    messages.success(request, f'{user.first_name} ya no es barbero')
+
+    messages.success(
+        request,
+        f'{user.first_name} ya no es barbero'
+    )
+
     return redirect('panel_admin')
 
 @login_required(login_url='login')

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'clientes',
     'usuarios',       
     'administracion',
+    'inventario',
 ]
 
 MIDDLEWARE = [
@@ -65,6 +66,7 @@ TEMPLATES = [
             BASE_DIR / 'citas' / 'templates',
             BASE_DIR / 'usuarios' / 'templates',        
             BASE_DIR / 'administracion' / 'templates',
+            BASE_DIR / 'inventario' / 'templates',
         ],
         'APP_DIRS': True,
         'OPTIONS': {
